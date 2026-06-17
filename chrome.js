@@ -2,7 +2,7 @@
    Set <body data-page="..."> to highlight the active nav item.
    Keys: about · services · team · booking · health · reviews · location */
 (function () {
-  var HOME = '행복펫 동물 메디컬센터.html';
+  var HOME = 'index.html';
   var NAV = [
     { k: 'about',    label: '병원소개',  href: '병원소개.html' },
     { k: 'services', label: '진료안내',  href: '진료안내.html' },
