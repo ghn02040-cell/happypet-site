@@ -1,8 +1,7 @@
-/* 행복펫 — 커서 실타래. 스크롤/마우스 움직일 때 나타나고 멈추면 사라짐. */
+/* 행복펫 — 스크롤 실타래. 스크롤할 때 화면에 실타래가 나타나고 멈추면 사라짐. */
 (function () {
   if (window.__cursorThread) return;
   window.__cursorThread = true;
-  if (window.matchMedia && !window.matchMedia('(pointer:fine)').matches) return;
 
   var canvas = document.createElement('canvas');
   canvas.id = 'cursor-thread';
@@ -19,54 +18,33 @@
   if (document.body) attach(); else document.addEventListener('DOMContentLoaded', attach);
   window.addEventListener('resize', resize);
 
-  var mouse = { x: -999, y: -999 };
-  var lastActivityTime = 0;
-  var FADE_DELAY = 400;
-  var inited = false;
+  var lastScrollTime = 0;
+  var FADE_DELAY = 600;
   var globalAlpha = 0;
 
-  var STRANDS = 6;
-  var N = 24;
-
+  // 실타래 선들 — 화면 왼쪽에서 오른쪽으로 흘러가는 여러 가닥
+  var STRANDS = 7;
   var strands = [];
   for (var s = 0; s < STRANDS; s++) {
-    var nodes = [];
-    for (var n = 0; n < N; n++) nodes.push({ x: 0, y: 0 });
     strands.push({
-      nodes: nodes,
-      ease: 0.08 + s * 0.03,
-      width: 1.5 + s * 0.4,
-      offsetX: (s - STRANDS/2) * 3,
-      offsetY: s * 2
+      y: 0.1 + s * (0.85 / STRANDS), // 화면 세로 위치 비율
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.3 + Math.random() * 0.4,
+      amp: 18 + Math.random() * 24,
+      width: 1.2 + Math.random() * 1.8,
+      offset: Math.random() * 200
     });
   }
 
-  function onActivity() {
-    lastActivityTime = performance.now();
-    if (!inited && mouse.x > 0) {
-      strands.forEach(function(st) {
-        st.nodes.forEach(function(nd) { nd.x = mouse.x; nd.y = mouse.y; });
-      });
-      inited = true;
-    }
-  }
-
-  window.addEventListener('mousemove', function (e) {
-    mouse.x = e.clientX; mouse.y = e.clientY;
-    if (!inited) {
-      strands.forEach(function(st) {
-        st.nodes.forEach(function(nd) { nd.x = e.clientX; nd.y = e.clientY; });
-      });
-      inited = true;
-    }
-    onActivity();
-  }, { passive: true });
+  var scrollY = window.scrollY || 0;
+  var time = 0;
 
   window.addEventListener('scroll', function () {
-    onActivity();
+    lastScrollTime = performance.now();
+    scrollY = window.scrollY || 0;
   }, { passive: true });
 
-  var col = { a: [182, 120, 220] };
+  var col = [182, 120, 220];
   function hex2rgb(h) {
     h = (h || '').trim().replace('#', '');
     if (h.length === 3) h = h.split('').map(function(c){ return c+c; }).join('');
@@ -76,7 +54,7 @@
   }
   function readColors() {
     var cs = getComputedStyle(document.documentElement);
-    var a = hex2rgb(cs.getPropertyValue('--primary')); if (a) col.a = a;
+    var a = hex2rgb(cs.getPropertyValue('--primary')); if (a) col = a;
   }
   readColors();
   var cframe = 0;
@@ -86,46 +64,37 @@
     if (!ctx) return;
     ctx.clearRect(0, 0, innerWidth, innerHeight);
     if (++cframe % 30 === 0) readColors();
-    if (!inited) return;
 
     var now = performance.now();
-    var active = now - lastActivityTime < FADE_DELAY;
+    var scrolling = now - lastScrollTime < FADE_DELAY;
 
-    if (active) {
-      globalAlpha = Math.min(1, globalAlpha + 0.08);
+    if (scrolling) {
+      globalAlpha = Math.min(1, globalAlpha + 0.07);
     } else {
-      globalAlpha = Math.max(0, globalAlpha - 0.03);
+      globalAlpha = Math.max(0, globalAlpha - 0.025);
     }
     if (globalAlpha <= 0) return;
 
-    var c = col.a;
+    time += 0.016;
+    var W = innerWidth, H = innerHeight;
+    var c = col;
 
     strands.forEach(function(st, si) {
-      var tx = mouse.x + st.offsetX;
-      var ty = mouse.y + st.offsetY;
-
-      st.nodes[0].x += (tx - st.nodes[0].x) * (st.ease + 0.12);
-      st.nodes[0].y += (ty - st.nodes[0].y) * (st.ease + 0.12);
-      for (var i = 1; i < N; i++) {
-        st.nodes[i].x += (st.nodes[i-1].x - st.nodes[i].x) * st.ease;
-        st.nodes[i].y += (st.nodes[i-1].y - st.nodes[i].y) * st.ease;
-      }
-
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-
-      var strandAlpha = globalAlpha * (0.5 + (STRANDS - si) / STRANDS * 0.5);
+      var baseY = st.y * H;
+      var strandAlpha = globalAlpha * (0.4 + (si % 3) * 0.15);
 
       ctx.beginPath();
-      ctx.moveTo(st.nodes[0].x, st.nodes[0].y);
-      for (var j = 1; j < N; j++) {
-        var taper = 1 - j / N;
-        var mx = (st.nodes[j-1].x + st.nodes[j].x) / 2;
-        var my = (st.nodes[j-1].y + st.nodes[j].y) / 2;
-        ctx.quadraticCurveTo(st.nodes[j-1].x, st.nodes[j-1].y, mx, my);
+      ctx.moveTo(0, baseY);
+
+      for (var x = 0; x <= W; x += 4) {
+        var wave = Math.sin((x + st.offset + time * st.speed * 80) * 0.012 + st.phase) * st.amp;
+        var wave2 = Math.sin((x * 0.007 + time * st.speed * 40) + st.phase * 1.3) * (st.amp * 0.4);
+        ctx.lineTo(x, baseY + wave + wave2);
       }
+
       ctx.strokeStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + strandAlpha + ')';
       ctx.lineWidth = st.width;
+      ctx.lineCap = 'round';
       ctx.stroke();
     });
   }
