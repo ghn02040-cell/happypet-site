@@ -21,12 +21,19 @@
 
   var mouse = { x: 0, y: 0 };
   var lastMoveTime = 0;
-  var FADE_DELAY = 200;
+  var FADE_DELAY = 300;
   var inited = false;
 
-  // 여러 가닥 설정
-  var STRANDS = 6;
-  var N = 22; // 각 가닥의 노드 수
+  var STRANDS = 5;
+  var N = 20;
+
+  var colors = [
+    [242, 135, 107],
+    [255, 180, 150],
+    [200, 100, 180],
+    [150, 180, 255],
+    [100, 220, 180]
+  ];
 
   var strands = [];
   for (var s = 0; s < STRANDS; s++) {
@@ -34,29 +41,12 @@
     for (var n = 0; n < N; n++) nodes.push({ x: 0, y: 0 });
     strands.push({
       nodes: nodes,
-      ease: 0.18 + Math.random() * 0.18,
-      offset: Math.random() * Math.PI * 2,
-      width: 1.5 + Math.random() * 3,
+      ease: 0.15 + s * 0.04,
+      width: 2.5 + s * 0.5,
       alpha: 0,
-      delay: s * 30
+      color: colors[s % colors.length]
     });
   }
-
-  var col = { a: [242, 135, 107], s: [255, 255, 255] };
-  function hex2rgb(h) {
-    h = (h || '').trim().replace('#', '');
-    if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
-    if (h.length < 6) return null;
-    var n = parseInt(h, 16);
-    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  }
-  function readColors() {
-    var cs = getComputedStyle(document.documentElement);
-    var a = hex2rgb(cs.getPropertyValue('--accent')); if (a) col.a = a;
-    var s = hex2rgb(cs.getPropertyValue('--surface')); if (s) col.s = s;
-  }
-  readColors();
-  var cframe = 0;
 
   window.addEventListener('mousemove', function (e) {
     mouse.x = e.clientX; mouse.y = e.clientY;
@@ -73,49 +63,44 @@
     requestAnimationFrame(frame);
     if (!ctx || !inited) return;
     ctx.clearRect(0, 0, innerWidth, innerHeight);
-    if (++cframe % 30 === 0) readColors();
 
     var now = performance.now();
     var moving = now - lastMoveTime < FADE_DELAY;
-    var c = col.a, s = col.s;
 
     strands.forEach(function (st, si) {
-      // 투명도: 움직이면 나타나고 멈추면 사라짐 (가닥마다 살짝 다르게)
       if (moving) {
-        st.alpha = Math.min(1, st.alpha + 0.08 + si * 0.01);
+        st.alpha = Math.min(1, st.alpha + 0.1);
       } else {
-        st.alpha = Math.max(0, st.alpha - (0.02 + si * 0.003));
+        st.alpha = Math.max(0, st.alpha - 0.025);
       }
       if (st.alpha <= 0) return;
 
-      // 마우스 주변에 살짝 퍼지는 오프셋
-      var wobble = Math.sin(now * 0.002 + st.offset) * 8;
-      var wobble2 = Math.cos(now * 0.0015 + st.offset) * 8;
-      var tx = mouse.x + wobble;
-      var ty = mouse.y + wobble2;
+      var tx = mouse.x;
+      var ty = mouse.y;
 
-      // 노드 업데이트
-      st.nodes[0].x += (tx - st.nodes[0].x) * (st.ease + 0.1);
-      st.nodes[0].y += (ty - st.nodes[0].y) * (st.ease + 0.1);
+      st.nodes[0].x += (tx - st.nodes[0].x) * (st.ease + 0.15);
+      st.nodes[0].y += (ty - st.nodes[0].y) * (st.ease + 0.15);
       for (var i = 1; i < N; i++) {
         st.nodes[i].x += (st.nodes[i-1].x - st.nodes[i].x) * st.ease;
         st.nodes[i].y += (st.nodes[i-1].y - st.nodes[i].y) * st.ease;
       }
 
-      // 가닥 그리기
+      var c = st.color;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(st.nodes[0].x, st.nodes[0].y);
       for (var j = 1; j < N; j++) {
-        var p0 = st.nodes[j-1], p1 = st.nodes[j];
-        var taper = 1 - j / N;
-        var mx = (p0.x + p1.x) / 2, my = (p0.y + p1.y) / 2;
-        ctx.strokeStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.85 * taper * st.alpha) + ')';
-        ctx.lineWidth = Math.max(0.3, st.width * taper);
-        ctx.beginPath();
-        ctx.moveTo(p0.x, p0.y);
-        ctx.quadraticCurveTo(p0.x, p0.y, mx, my);
-        ctx.stroke();
+        var mx = (st.nodes[j-1].x + st.nodes[j].x) / 2;
+        var my = (st.nodes[j-1].y + st.nodes[j].y) / 2;
+        ctx.quadraticCurveTo(st.nodes[j-1].x, st.nodes[j-1].y, mx, my);
       }
+
+      var taper = 1;
+      ctx.strokeStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.8 * st.alpha) + ')';
+      ctx.lineWidth = st.width;
+      ctx.stroke();
     });
   }
   requestAnimationFrame(frame);
