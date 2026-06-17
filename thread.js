@@ -28,16 +28,15 @@
   basePath.setAttribute('class', 'thread-base');
   svg.appendChild(basePath);
 
-  var L = 0, samples = [], W = 0, H = 0;
+  var L = 0, W = 0, H = 0;
+  // 스크롤 진행도(0~1) → 경로 길이 비율 직접 매핑
+  var scrollStart = 0, scrollEnd = 0;
 
   function docHeight() {
     return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
   }
 
-  // 메리츠화재 스타일 경로 생성
-  // 오른쪽에서 시작해서 왼쪽으로 구불구불 내려가며 루프를 만드는 경로
   function buildPath(W, H) {
-    var pts = [];
     var sections = [
       ['.hero', 0.7],
       ['#about', 0.5],
@@ -47,58 +46,51 @@
       ['#location', 0.4]
     ];
 
-    var validSections = [];
+    var anchors = [];
     sections.forEach(function(s) {
       var el = document.querySelector(s[0]);
       if (!el) return;
       var r = el.getBoundingClientRect();
-      validSections.push({
-        y: r.top + window.scrollY + r.height * s[1]
-      });
+      anchors.push({ y: r.top + window.scrollY + r.height * s[1] });
     });
 
-    if (validSections.length < 2) return null;
+    if (anchors.length < 2) return null;
 
-    // 시작점: 오른쪽 상단
-    var startX = W * 0.85;
-    var startY = validSections[0].y - 100;
+    // 스크롤 범위 저장
+    scrollStart = anchors[0].y - window.innerHeight * 0.5;
+    scrollEnd = anchors[anchors.length - 1].y - window.innerHeight * 0.4;
 
+    var marginL = W * 0.08;
+    var marginR = W * 0.88;
+    var side = 1;
+
+    var startX = marginR;
+    var startY = anchors[0].y - 60;
     var d = 'M ' + startX.toFixed(1) + ' ' + startY.toFixed(1);
 
-    var side = 1; // 1 = 오른쪽, -1 = 왼쪽
-    var marginL = W * 0.08;
-    var marginR = W * 0.92;
-
-    for (var i = 0; i < validSections.length - 1; i++) {
-      var ya = validSections[i].y;
-      var yb = validSections[i + 1].y;
+    for (var i = 0; i < anchors.length - 1; i++) {
+      var ya = anchors[i].y;
+      var yb = anchors[i + 1].y;
       var dy = yb - ya;
-
       var ax = side > 0 ? marginR : marginL;
       var bx = side > 0 ? marginL : marginR;
-
-      // 루프 위치
       var loopY = ya + dy * 0.3;
-      var loopSize = Math.min(70, dy * 0.15);
-
-      // 루프를 향한 커브
-      d += ' C ' +
-        ax.toFixed(1) + ' ' + (ya + dy * 0.1).toFixed(1) + ' ' +
-        ax.toFixed(1) + ' ' + (loopY - loopSize * 1.5).toFixed(1) + ' ' +
-        ax.toFixed(1) + ' ' + loopY.toFixed(1);
-
-      // 루프 (작은 원형 고리)
+      var loopSize = Math.min(65, dy * 0.13);
       var loopDir = side > 0 ? -1 : 1;
-      d += ' C ' +
-        (ax + loopDir * loopSize * 2).toFixed(1) + ' ' + (loopY + loopSize * 0.5).toFixed(1) + ' ' +
-        (ax + loopDir * loopSize * 2).toFixed(1) + ' ' + (loopY - loopSize * 1.5).toFixed(1) + ' ' +
-        ax.toFixed(1) + ' ' + (loopY - loopSize * 0.5).toFixed(1);
 
-      // 루프에서 다음 섹션으로 S커브
+      d += ' C ' + ax.toFixed(1) + ' ' + (ya + dy * 0.05).toFixed(1) + ' ' +
+           ax.toFixed(1) + ' ' + (loopY - loopSize * 1.8).toFixed(1) + ' ' +
+           ax.toFixed(1) + ' ' + loopY.toFixed(1);
+
       d += ' C ' +
-        (ax + loopDir * loopSize).toFixed(1) + ' ' + (loopY + loopSize).toFixed(1) + ' ' +
-        bx.toFixed(1) + ' ' + (yb - dy * 0.2).toFixed(1) + ' ' +
-        bx.toFixed(1) + ' ' + yb.toFixed(1);
+           (ax + loopDir * loopSize * 2.2).toFixed(1) + ' ' + (loopY + loopSize * 0.6).toFixed(1) + ' ' +
+           (ax + loopDir * loopSize * 2.2).toFixed(1) + ' ' + (loopY - loopSize * 1.6).toFixed(1) + ' ' +
+           ax.toFixed(1) + ' ' + (loopY - loopSize * 0.4).toFixed(1);
+
+      d += ' C ' +
+           (ax + loopDir * loopSize * 0.5).toFixed(1) + ' ' + (loopY + loopSize).toFixed(1) + ' ' +
+           bx.toFixed(1) + ' ' + (yb - dy * 0.15).toFixed(1) + ' ' +
+           bx.toFixed(1) + ' ' + yb.toFixed(1);
 
       side *= -1;
     }
@@ -114,10 +106,9 @@
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     layer.style.height = H + 'px';
 
-    var lineW = Math.max(1.5, Math.min(W * 0.003, 3));
     basePath.style.stroke = 'var(--primary)';
-    basePath.style.strokeWidth = lineW;
-    basePath.style.opacity = '0.65';
+    basePath.style.strokeWidth = '2';
+    basePath.style.opacity = '0.7';
 
     var d = buildPath(W, H);
     if (!d) return;
@@ -125,35 +116,26 @@
     basePath.setAttribute('d', d);
     L = basePath.getTotalLength();
     basePath.style.strokeDasharray = L;
-
-    // y → length 샘플링
-    samples = [];
-    for (var k = 0; k <= 500; k++) {
-      var len = (k / 500) * L;
-      var p = basePath.getPointAtLength(len);
-      samples.push({ y: p.y, len: len });
-    }
+    basePath.style.strokeDashoffset = L; // 처음엔 완전히 숨김
 
     draw();
   }
 
-  function lenForY(targetY) {
-    if (!samples.length) return 0;
-    if (targetY <= samples[0].y) return 0;
-    if (targetY >= samples[samples.length - 1].y) return L;
-    for (var i = 1; i < samples.length; i++) {
-      if (samples[i].y >= targetY) {
-        var a = samples[i - 1], b = samples[i];
-        var t = (targetY - a.y) / (b.y - a.y || 1);
-        return a.len + (b.len - a.len) * t;
-      }
-    }
-    return L;
-  }
-
   function draw() {
     if (!L) return;
-    var drawn = reduce ? L : Math.max(0, Math.min(L, lenForY(window.scrollY + window.innerHeight * 0.65)));
+    var drawn;
+    if (reduce) {
+      drawn = L;
+    } else {
+      var scrollY = window.scrollY;
+      var range = scrollEnd - scrollStart;
+      if (range <= 0) { drawn = 0; }
+      else {
+        var progress = (scrollY - scrollStart) / range;
+        progress = Math.max(0, Math.min(1, progress));
+        drawn = L * progress;
+      }
+    }
     basePath.style.strokeDashoffset = (L - drawn);
   }
 
