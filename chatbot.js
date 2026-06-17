@@ -9,7 +9,6 @@
   var STORE = 'happypet-chat-v1';
   var OPEN_KEY = 'happypet-chat-open';
 
-  /* ---------- clinic knowledge (kept factual & in sync with site) ---------- */
   var KNOWLEDGE = [
     '병원명: 행복펫 동물 메디컬센터',
     '대표원장: 이수현 수의사 (내과)',
@@ -50,34 +49,52 @@
     '햄스터도 진료하나요?'
   ];
 
-  /* ---------- icons ---------- */
   var PAW = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="9" r="2.1"/><circle cx="12" cy="6.4" r="2.3"/><circle cx="18" cy="9" r="2.1"/><path d="M12 11.2c-3 0-5.2 2.1-5.2 4.5 0 1.9 1.6 2.8 3.2 2.8.9 0 1.4-.4 2-.4s1.1.4 2 .4c1.6 0 3.2-.9 3.2-2.8 0-2.4-2.2-4.5-5.2-4.5Z"/></svg>';
   var SEND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   var CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-  var CHAT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.2 7.6L3 21l1.9-5.8A8.5 8.5 0 1 1 21 11.5Z"/></svg>';
   var RESET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 4v4h4"/></svg>';
 
-  /* ---------- styles ---------- */
+  var CHARACTER_IMG = '<img src="chatbot-character.png" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  var CHARACTER_SMALL = '<img src="chatbot-character.png" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:9px;">';
+
   var css = `
   #hpc-root{ position:fixed; z-index:2147483000; right:max(20px, env(safe-area-inset-right)); bottom:max(20px, env(safe-area-inset-bottom)); font-family:var(--sans, system-ui, sans-serif); }
-  #hpc-launch{ position:relative; width:62px; height:62px; border-radius:50%; display:grid; place-items:center;
-    background:var(--primary,#0F6E5C); color:#fff; border:3px solid var(--surface,#fff);
+
+  #hpc-launch{ position:relative; width:68px; height:68px; border-radius:50%; display:grid; place-items:center;
+    background:transparent; border:3px solid var(--surface,#fff);
     box-shadow:0 0 0 1.5px rgba(60,144,121,.35), 0 14px 34px -10px rgba(60,144,121,.5), 0 4px 12px rgba(0,0,0,.16);
-    transition:transform .25s cubic-bezier(.2,.7,.3,1), background .25s; }
-  #hpc-launch:hover{ transform:translateY(-3px) scale(1.04); background:var(--primary-deep,#0A4A3E); }
-  #hpc-launch:active{ transform:scale(.96); }
-  #hpc-launch svg{ width:28px; height:28px; transition:opacity .2s, transform .3s; }
-  #hpc-launch .ic-close{ position:absolute; opacity:0; transform:rotate(-90deg); }
-  #hpc-root.open #hpc-launch .ic-chat{ opacity:0; transform:rotate(90deg); }
-  #hpc-root.open #hpc-launch .ic-close{ opacity:1; transform:rotate(0); }
+    overflow:hidden; padding:0;
+    animation: hpc-boing 2s ease-in-out infinite;
+    transition:transform .25s cubic-bezier(.2,.7,.3,1); }
+  #hpc-launch:hover{ animation: none; transform:translateY(-4px) scale(1.08); }
+  #hpc-launch:active{ transform:scale(.94); }
+
+  @keyframes hpc-boing{
+    0%   { transform: translateY(0) scale(1,1); }
+    10%  { transform: translateY(0) scale(1.08, 0.92); }
+    25%  { transform: translateY(-18px) scale(0.94, 1.06); }
+    50%  { transform: translateY(0) scale(1.06, 0.94); }
+    60%  { transform: translateY(-8px) scale(0.97, 1.03); }
+    75%  { transform: translateY(0) scale(1.02, 0.98); }
+    85%  { transform: translateY(-3px) scale(1,1); }
+    100% { transform: translateY(0) scale(1,1); }
+  }
+
+  #hpc-launch .char-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  #hpc-launch .ic-close{ position:absolute; inset:0; display:grid; place-items:center; background:rgba(15,110,92,.88); color:#fff; opacity:0; transition:opacity .2s; border-radius:50%; }
+  #hpc-launch .ic-close svg{ width:26px; height:26px; }
+  #hpc-root.open #hpc-launch .ic-close{ opacity:1; }
+  #hpc-root.open #hpc-launch{ animation:none; }
+
   #hpc-launch::after{ content:""; position:absolute; right:-3px; bottom:-3px; width:18px; height:18px; border-radius:50%;
-    background:var(--amber,#F4B33D); box-shadow:0 0 0 3px var(--bg,#F8F6F0); }
+    background:var(--amber,#F4B33D); box-shadow:0 0 0 3px var(--bg,#F8F6F0); z-index:2; }
   #hpc-root.open #hpc-launch::after, #hpc-root.seen #hpc-launch::after{ display:none; }
-  #hpc-launch .ring{ position:absolute; inset:0; border-radius:50%; box-shadow:0 0 0 0 rgba(60,144,121,.45); animation:hpc-pulse 2.4s ease-out infinite; }
+
+  #hpc-launch .ring{ position:absolute; inset:0; border-radius:50%; box-shadow:0 0 0 0 rgba(60,144,121,.45); animation:hpc-pulse 2.4s ease-out infinite; z-index:-1; }
   #hpc-root.open #hpc-launch .ring, #hpc-root.seen #hpc-launch .ring{ animation:none; }
   @keyframes hpc-pulse{ 0%{box-shadow:0 0 0 0 rgba(60,144,121,.4);} 70%{box-shadow:0 0 0 16px rgba(60,144,121,0);} 100%{box-shadow:0 0 0 0 rgba(60,144,121,0);} }
 
-  #hpc-panel{ position:absolute; right:0; bottom:78px; width:380px; max-width:calc(100vw - 32px); height:560px; max-height:calc(100vh - 120px);
+  #hpc-panel{ position:absolute; right:0; bottom:84px; width:380px; max-width:calc(100vw - 32px); height:560px; max-height:calc(100vh - 120px);
     background:var(--surface,#fff); border-radius:24px; overflow:hidden; display:flex; flex-direction:column;
     box-shadow:0 40px 80px -28px rgba(10,74,62,.4), 0 12px 30px -12px rgba(0,0,0,.2), inset 0 0 0 1px var(--line,rgba(22,35,31,.1));
     transform-origin:bottom right; opacity:0; transform:translateY(14px) scale(.96); pointer-events:none; visibility:hidden;
@@ -85,9 +102,8 @@
   #hpc-root.open #hpc-panel{ opacity:1; transform:none; pointer-events:auto; visibility:visible; transition:transform .26s cubic-bezier(.2,.7,.3,1); }
 
   .hpc-head{ display:flex; align-items:center; gap:12px; padding:16px 16px 14px; background:var(--primary,#0F6E5C); color:#fff; position:relative; }
-  .hpc-head .av{ width:42px; height:42px; border-radius:13px; flex:none; display:grid; place-items:center; background:rgba(255,255,255,.16); position:relative; }
-  .hpc-head .av svg{ width:25px; height:25px; }
-  .hpc-head .av::after{ content:""; position:absolute; right:-2px; bottom:-2px; width:13px; height:13px; border-radius:50%; background:#43D6A0; box-shadow:0 0 0 2.5px var(--primary,#0F6E5C); }
+  .hpc-head .av{ width:42px; height:42px; border-radius:13px; flex:none; overflow:hidden; position:relative; }
+  .hpc-head .av::after{ content:""; position:absolute; right:-2px; bottom:-2px; width:13px; height:13px; border-radius:50%; background:#43D6A0; box-shadow:0 0 0 2.5px var(--primary,#0F6E5C); z-index:1; }
   .hpc-head .t b{ display:block; font-size:16px; font-weight:800; letter-spacing:-.02em; }
   .hpc-head .t span{ font-size:12.5px; color:rgba(255,255,255,.82); }
   .hpc-head .acts{ margin-left:auto; display:flex; gap:4px; }
@@ -100,8 +116,7 @@
 
   .hpc-msg{ display:flex; gap:9px; align-items:flex-end; max-width:88%; animation:hpc-in .3s cubic-bezier(.2,.7,.3,1); }
   @keyframes hpc-in{ from{opacity:0; transform:translateY(8px);} }
-  .hpc-msg .ava{ width:30px; height:30px; border-radius:9px; flex:none; display:grid; place-items:center; background:var(--primary,#0F6E5C); color:#fff; }
-  .hpc-msg .ava svg{ width:17px; height:17px; }
+  .hpc-msg .ava{ width:30px; height:30px; border-radius:9px; flex:none; overflow:hidden; }
   .hpc-msg .bub{ padding:11px 14px; border-radius:16px; font-size:14.5px; line-height:1.55; white-space:pre-wrap; word-break:break-word; }
   .hpc-msg.bot .bub{ background:var(--surface,#fff); color:var(--ink,#16231F); border-bottom-left-radius:5px; box-shadow:var(--shadow-s,0 2px 8px rgba(22,35,31,.06)); }
   .hpc-msg.me{ margin-left:auto; flex-direction:row-reverse; }
@@ -139,17 +154,17 @@
     #hpc-panel{ width:calc(100vw - 24px); height:calc(100vh - 100px); bottom:76px; }
     #hpc-root{ right:14px; bottom:14px; }
   }`;
+
   var st = document.createElement('style');
   st.textContent = css;
   document.head.appendChild(st);
 
-  /* ---------- build DOM ---------- */
   var root = document.createElement('div');
   root.id = 'hpc-root';
   root.innerHTML =
     '<div id="hpc-panel" role="dialog" aria-label="행복펫 상담봇">' +
       '<div class="hpc-head">' +
-        '<span class="av">' + PAW + '</span>' +
+        '<span class="av">' + CHARACTER_SMALL + '</span>' +
         '<div class="t"><b>행복펫 상담봇</b><span>보통 1분 이내 응답 · AI 안내</span></div>' +
         '<div class="acts">' +
           '<button class="hpc-reset" aria-label="대화 초기화" title="대화 초기화">' + RESET + '</button>' +
@@ -169,8 +184,11 @@
         '<div class="hpc-disc">건강 상담은 참고용이며 실제 진료를 대신하지 않아요.</div>' +
       '</div>' +
     '</div>' +
-    '<button id="hpc-launch" aria-label="상담봇 열기"><span class="ring"></span>' +
-      '<span class="ic-chat">' + CHAT + '</span><span class="ic-close">' + CLOSE + '</span></button>';
+    '<button id="hpc-launch" aria-label="상담봇 열기">' +
+      '<span class="ring"></span>' +
+      '<img class="char-img" src="chatbot-character.png" alt="상담봇">' +
+      '<span class="ic-close">' + CLOSE + '</span>' +
+    '</button>';
   document.body.appendChild(root);
 
   var bodyEl = root.querySelector('#hpc-body');
@@ -178,7 +196,6 @@
   var sendBtn = root.querySelector('#hpc-send');
   var launch = root.querySelector('#hpc-launch');
 
-  /* ---------- state ---------- */
   var history = [];
   try { history = JSON.parse(localStorage.getItem(STORE) || '[]'); } catch (e) { history = []; }
   if (!Array.isArray(history)) history = [];
@@ -195,7 +212,7 @@
     var wrap = document.createElement('div');
     wrap.className = 'hpc-msg ' + (role === 'user' ? 'me' : 'bot');
     var inner = '';
-    if (role !== 'user') inner += '<span class="ava">' + PAW + '</span>';
+    if (role !== 'user') inner += '<span class="ava"><img src="chatbot-character.png" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:9px;"></span>';
     inner += '<div class="bub"></div>';
     wrap.innerHTML = inner;
     wrap.querySelector('.bub').textContent = text;
@@ -226,7 +243,7 @@
     var wrap = document.createElement('div');
     wrap.className = 'hpc-msg bot';
     wrap.id = 'hpc-typing-row';
-    wrap.innerHTML = '<span class="ava">' + PAW + '</span><div class="bub" style="padding:0"><div class="hpc-typing"><i></i><i></i><i></i></div></div>';
+    wrap.innerHTML = '<span class="ava"><img src="chatbot-character.png" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:9px;"></span><div class="bub" style="padding:0"><div class="hpc-typing"><i></i><i></i><i></i></div></div>';
     bodyEl.appendChild(wrap);
     scrollDown();
     return wrap;
@@ -242,10 +259,7 @@
     }
   }
 
-  /* ---------- AI ---------- */
   function buildMessages() {
-    // Prime the model with the system instructions as a user/assistant pair,
-    // since window.claude.complete has no dedicated system role.
     var msgs = [
       { role: 'user', content: SYSTEM + '\n\n이 안내에 따라 보호자를 도와줘. 준비되면 "네"라고만 답해.' },
       { role: 'assistant', content: '네, 행복펫 상담봇으로서 따뜻하고 정확하게 안내해 드릴게요.' }
@@ -265,7 +279,6 @@
     sendBtn.disabled = true;
     textEl.value = '';
     autosize();
-    // remove any lingering greeting chips
     var chips = bodyEl.querySelector('.hpc-chips');
     if (chips) chips.remove();
 
@@ -292,7 +305,6 @@
     textEl.focus();
   }
 
-  /* ---------- interactions ---------- */
   function openPanel() {
     root.classList.add('open');
     markSeen();
