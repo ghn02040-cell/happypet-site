@@ -29,7 +29,6 @@
   basePath.setAttribute('class', 'thread-base');
   svg.appendChild(basePath);
 
-  // 움직이는 발바닥
   function makePaw() {
     var g = document.createElementNS(SVGNS, 'g');
     g.setAttribute('class', 'thread-paw');
@@ -54,57 +53,6 @@
     return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
   }
 
-  // 루프를 포함한 경로 생성
-  function buildLoopyPath(W, H, sections) {
-    var pts = [];
-    var leftX = Math.max(40, Math.min(W * 0.12, 150));
-    var rightX = W - leftX;
-
-    sections.forEach(function(sec, idx) {
-      var el = document.querySelector(sec[0]);
-      if (!el) return;
-      var r = el.getBoundingClientRect();
-      var y = r.top + window.scrollY + r.height * sec[1];
-      var x = (idx % 2 === 0) ? leftX : rightX;
-
-      // 루프 포인트 추가 (각 섹션 앞에 작은 루프)
-      if (idx > 0) {
-        var prevX = (idx % 2 === 0) ? rightX : leftX;
-        var loopSize = 60 + Math.random() * 40;
-        var loopY = y - 80;
-        // 루프 포인트들
-        pts.push({ x: prevX, y: loopY - loopSize });
-        pts.push({ x: prevX + (x > prevX ? loopSize : -loopSize), y: loopY - loopSize * 1.5 });
-        pts.push({ x: prevX + (x > prevX ? loopSize * 0.5 : -loopSize * 0.5), y: loopY });
-        pts.push({ x: prevX - (x > prevX ? loopSize * 0.3 : -loopSize * 0.3), y: loopY - loopSize * 0.8 });
-        pts.push({ x: prevX, y: loopY });
-      }
-      pts.push({ x: x, y: y });
-    });
-    return pts;
-  }
-
-  function catmull(points) {
-    if (points.length < 2) return '';
-    var d = 'M' + points[0].x.toFixed(1) + ' ' + points[0].y.toFixed(1);
-    for (var i = 0; i < points.length - 1; i++) {
-      var p0 = points[i-1] || points[i];
-      var p1 = points[i];
-      var p2 = points[i+1];
-      var p3 = points[i+2] || p2;
-      var c1x = p1.x + (p2.x - p0.x) / 5, c1y = p1.y + (p2.y - p0.y) / 5;
-      var c2x = p2.x - (p3.x - p1.x) / 5, c2y = p2.y - (p3.y - p1.y) / 5;
-      d += 'C' + c1x.toFixed(1) + ' ' + c1y.toFixed(1) + ' ' + c2x.toFixed(1) + ' ' + c2y.toFixed(1) + ' ' + p2.x.toFixed(1) + ' ' + p2.y.toFixed(1);
-    }
-    return d;
-  }
-
-  function getColor() {
-    var cs = getComputedStyle(document.documentElement);
-    var c = cs.getPropertyValue('--primary').trim();
-    return c || '#0F6E5C';
-  }
-
   function build() {
     W = document.documentElement.clientWidth;
     H = docHeight();
@@ -113,26 +61,66 @@
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     layer.style.height = H + 'px';
 
-    var lineW = Math.max(2, Math.min(W * 0.004, 5));
-    basePath.style.stroke = getColor();
+    var lineW = Math.max(2, Math.min(W * 0.004, 4));
+    basePath.style.stroke = 'var(--primary)';
     basePath.style.strokeWidth = lineW;
-    basePath.style.opacity = '0.7';
+    basePath.style.opacity = '0.65';
+
+    var leftX = Math.max(40, Math.min(W * 0.1, 120));
+    var rightX = W - leftX;
 
     var sections = [
       ['.hero', 0.5], ['#about', 0.4], ['#services', 0.5],
       ['#doctors', 0.5], ['#tips', 0.5], ['#location', 0.4]
     ];
 
-    var pts = buildLoopyPath(W, H, sections);
-    if (pts.length < 2) return;
+    // 섹션별 앵커 포인트
+    var anchors = [];
+    sections.forEach(function(sec, idx) {
+      var el = document.querySelector(sec[0]);
+      if (!el) return;
+      var r = el.getBoundingClientRect();
+      var y = r.top + window.scrollY + r.height * sec[1];
+      var x = (idx % 2 === 0) ? leftX : rightX;
+      anchors.push({ x: x, y: y, idx: idx });
+    });
 
-    var d = catmull(pts);
+    if (anchors.length < 2) return;
+
+    // SVG path: 각 앵커 사이에 부드러운 루프 추가
+    var d = 'M ' + anchors[0].x + ' ' + anchors[0].y;
+
+    for (var i = 0; i < anchors.length - 1; i++) {
+      var a = anchors[i];
+      var b = anchors[i + 1];
+      var midY = (a.y + b.y) / 2;
+      var loopR = Math.min(80, (b.y - a.y) * 0.18);
+      var goRight = b.x > a.x;
+
+      // 루프 중심
+      var lx = a.x;
+      var ly = midY - loopR * 0.5;
+
+      // 루프를 만드는 베지어 곡선
+      // 1) a → 루프 진입
+      var c1x = a.x + (goRight ? -loopR * 1.5 : loopR * 1.5);
+      var c1y = ly - loopR;
+      var c2x = lx + (goRight ? -loopR * 2 : loopR * 2);
+      var c2y = ly;
+      d += ' C ' + c1x + ' ' + c1y + ' ' + c2x + ' ' + c2y + ' ' + lx + ' ' + (ly + loopR * 0.8);
+
+      // 2) 루프 → b
+      var c3x = lx + (goRight ? loopR * 0.5 : -loopR * 0.5);
+      var c3y = ly + loopR * 1.5;
+      var c4x = (a.x + b.x) / 2;
+      var c4y = midY + loopR;
+      d += ' C ' + c3x + ' ' + c3y + ' ' + c4x + ' ' + c4y + ' ' + b.x + ' ' + b.y;
+    }
+
     basePath.setAttribute('d', d);
-
     L = basePath.getTotalLength();
     basePath.style.strokeDasharray = L;
 
-    // 샘플링
     samples = [];
     var N = 300;
     for (var k = 0; k <= N; k++) {
@@ -141,7 +129,7 @@
       samples.push({ y: p.y, len: len });
     }
 
-    draw(true);
+    draw();
   }
 
   function lenForY(targetY) {
