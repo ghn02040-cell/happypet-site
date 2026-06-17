@@ -32,7 +32,7 @@
     var H = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
     svg.setAttribute('width', W);
     svg.setAttribute('height', H);
-    svg.setAttribute('viewBox', '0 + ' + W + ' ' + H);
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     layer.style.height = H + 'px';
 
     path.setAttribute('stroke', 'var(--primary)');
@@ -62,11 +62,8 @@
       var ly = ya + dy * 0.35;
       var lr = Math.min(60, dy * 0.12);
 
-      // 내려오다 루프 만들기
       d += ' C ' + ax + ' ' + (ya + dy*0.1) + ' ' + ax + ' ' + (ly - lr*2) + ' ' + ax + ' ' + ly;
-      // 루프
       d += ' C ' + (ax + ldir*lr*2.5) + ' ' + (ly + lr*0.8) + ' ' + (ax + ldir*lr*2.5) + ' ' + (ly - lr*1.8) + ' ' + ax + ' ' + (ly - lr*0.3);
-      // 다음 섹션으로
       d += ' C ' + (ax + ldir*lr*0.3) + ' ' + (ly + lr) + ' ' + bx + ' ' + (yb - dy*0.1) + ' ' + bx + ' ' + yb;
       side *= -1;
     }
@@ -82,13 +79,11 @@
     if (!L) return;
     var H = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
     var vh = window.innerHeight;
-    // 스크롤 0 → 맨 위, 1 → 맨 아래
     var maxScroll = H - vh;
     if (maxScroll <= 0) return;
     var progress = window.scrollY / maxScroll;
     progress = Math.max(0, Math.min(1, progress));
-    var drawn = L * progress;
-    path.setAttribute('stroke-dashoffset', L - drawn);
+    path.setAttribute('stroke-dashoffset', L - (L * progress));
   }
 
   var ticking = false;
@@ -100,12 +95,7 @@
 
   window.addEventListener('resize', function() { setTimeout(build, 200); }, { passive: true });
 
-  function init() { build(); }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  build();
   window.addEventListener('load', build);
   [500, 1500, 3000].forEach(function(t) { setTimeout(build, t); });
   document.addEventListener('image-slot:filled', build);
