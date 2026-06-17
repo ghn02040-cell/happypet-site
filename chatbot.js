@@ -54,7 +54,7 @@
   var CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   var RESET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 4v4h4"/></svg>';
 
-  var CHARACTER_IMG = '<img src="chatbot-character.png" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  var CHARACTER_IMG = '<img src="업로드/chatbot-character.png" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
   var CHARACTER_SMALL = '<img src="chatbot-character.png" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:9px;">';
 
   var css = `
