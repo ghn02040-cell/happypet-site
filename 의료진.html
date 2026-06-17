@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>의료진 · 행복펫 동물 메디컬센터</title>
+<script>try{var t=localStorage.getItem('happypet-theme');if(t)document.documentElement.setAttribute('data-theme',t);var m=localStorage.getItem('happypet-mode');if(m)document.documentElement.setAttribute('data-mode',m);}catch(e){}</script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="themes.css">
+<meta name="description" content="각 분야의 전문성과 따뜻한 마음을 갖춘 행복펫 전문 수의사를 소개합니다.">
+<meta property="og:site_name" content="행복펫 동물 메디컬센터">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://happypet.kr/의료진.html">
+<meta property="og:title" content="의료진 · 행복펫 동물 메디컬센터">
+<meta property="og:description" content="내과·외과·특수동물·영상의학 각 분야의 전문 수의사를 만나보세요.">
+<meta property="og:image" content="https://happypet.kr/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://happypet.kr/og-image.png">
+<style>
+.subhero { padding-top: clamp(130px,15vw,180px); padding-bottom: clamp(30px,5vw,60px); position: relative; overflow: hidden; }
+.subhero::before { content:""; position:absolute; inset:0; z-index:-1; background: radial-gradient(55% 60% at 8% 0%, var(--accent-soft), transparent 62%); }
+.subhero h1 { font-size: clamp(34px,6vw,76px); font-weight:800; letter-spacing:-.035em; line-height:1.02; margin-top:16px; }
+.subhero .display-en { font-family: var(--display); font-weight:800; color: var(--accent); }
+.subhero p { margin-top:18px; max-width:54ch; }
+.crumb { font: 600 13.5px/1 var(--latin); letter-spacing:.04em; color: var(--ink-faint); }
+.crumb a:hover { color: var(--primary); }
+
+.team { display:grid; grid-template-columns:repeat(2,1fr); gap:26px; margin-top:8px; }
+.member { background:var(--surface); border-radius:var(--radius-l); box-shadow:var(--shadow-s); overflow:hidden; display:grid; grid-template-columns:200px 1fr; transition:transform .3s, box-shadow .3s; }
+.member:hover { transform:translateY(-5px); box-shadow:var(--shadow-m); }
+.member .photo { width:100%; height:100%; min-height:230px; }
+.member .info { padding:26px 28px; }
+.member .role { color:var(--accent-deep); font-weight:700; font-size:13px; letter-spacing:.03em; }
+.member h3 { font-size:24px; font-weight:800; letter-spacing:-.03em; margin-top:5px; }
+.member .info > p { color:var(--ink-soft); font-size:14.5px; margin-top:12px; }
+.member ul { list-style:none; margin-top:14px; display:flex; flex-direction:column; gap:7px; }
+.member ul li { font-size:13.5px; color:var(--ink-soft); padding-left:18px; position:relative; }
+.member ul li::before { content:""; position:absolute; left:0; top:7px; width:7px; height:7px; border-radius:50%; background:var(--primary); }
+
+.values { background:var(--paper); }
+.val-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:52px; }
+.val { padding:32px 28px; border-radius:var(--radius-l); background:var(--surface); box-shadow:var(--shadow-s); }
+.val .ic { width:52px; height:52px; border-radius:14px; display:grid; place-items:center; background:var(--primary-tint); color:var(--primary); margin-bottom:18px; }
+.val h4 { font-size:20px; font-weight:800; letter-spacing:-.03em; }
+.val p { color:var(--ink-soft); font-size:15px; margin-top:8px; }
+@media (max-width:900px){ .team{grid-template-columns:1fr;} .val-grid{grid-template-columns:1fr;} }
+@media (max-width:560px){ .member{grid-template-columns:1fr;} .member .photo{min-height:260px;} }
+</style>
+</head>
+<body data-page="team">
+
+<section class="subhero">
+  <div class="wrap">
+    <p class="crumb" data-reveal><a href="행복펫 동물 메디컬센터.html">홈</a> &nbsp;/&nbsp; 의료진</p>
+    <span class="eyebrow" data-reveal style="--i:1; margin-top:18px;">OUR TEAM</span>
+    <h1 data-reveal style="--i:2">믿고 맡길 수 있는<br><span class="display-en">전문 수의사</span>를 만나보세요</h1>
+    <p class="lead" data-reveal style="--i:3">각 분야의 전문성과 따뜻한 마음을 갖춘 행복펫 의료진이 우리 아이의 건강을 책임집니다.</p>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="team">
+      <div class="member" data-reveal>
+        <image-slot id="m1" class="photo" shape="rect" src="doc-soohyun.png" placeholder="원장 사진"></image-slot>
+        <div class="info"><div class="role">대표원장 · 내과</div><h3>이수현 수의사</h3>
+          <p>내과 질환의 정밀 진단과 만성질환 관리를 전문으로 합니다. 보호자와의 충분한 소통을 가장 중요하게 생각합니다.</p>
+          <ul><li>서울대학교 수의학과 졸업</li><li>내과 전문 임상 12년</li><li>한국수의내과학회 정회원</li></ul></div>
+      </div>
+      <div class="member" data-reveal style="--i:1">
+        <image-slot id="m2" class="photo" shape="rect" src="doc-seoyeon.png" placeholder="수의사 사진"></image-slot>
+        <div class="info"><div class="role">진료원장 · 외과</div><h3>이서연 수의사</h3>
+          <p>정형외과·연부조직 수술과 마취통증 관리를 담당합니다. 안전한 수술과 빠른 회복을 최우선으로 합니다.</p>
+          <ul><li>건국대학교 수의학과 졸업</li><li>외과 전문 임상 9년</li><li>슬개골 탈구 수술 1,000례 이상</li></ul></div>
+      </div>
+      <div class="member" data-reveal style="--i:2">
+        <image-slot id="m3" class="photo" shape="rect" src="doc-haneul.png" placeholder="수의사 사진"></image-slot>
+        <div class="info"><div class="role">진료원장 · 특수동물</div><h3>박하늘 수의사</h3>
+          <p>햄스터·토끼·기니피그 등 작은 동물 진료 전문. 예민한 특수동물의 작은 신호까지 세심하게 살핍니다.</p>
+          <ul><li>충북대학교 수의학과 졸업</li><li>특수동물 진료 7년</li><li>국제 이색동물 수의사회 회원</li></ul></div>
+      </div>
+      <div class="member" data-reveal style="--i:3">
+        <image-slot id="m4" class="photo" shape="rect" src="doc-minjae.png" placeholder="수의사 사진"></image-slot>
+        <div class="info"><div class="role">진료의 · 영상의학</div><h3>정민재 수의사</h3>
+          <p>초음파·CT 등 영상 진단을 담당합니다. 보이지 않는 질환을 정확하게 찾아내는 데 집중합니다.</p>
+          <ul><li>경북대학교 수의학과 졸업</li><li>영상의학 임상 6년</li><li>복부 초음파 인증 과정 수료</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section values">
+  <div class="wrap">
+    <span class="eyebrow" data-reveal>OUR VALUES</span>
+    <h2 class="kr-head" data-reveal style="--i:1; font-size:clamp(28px,3.6vw,46px); margin-top:14px;">우리가 진료하는<br>세 가지 원칙</h2>
+    <div class="val-grid">
+      <div class="val" data-reveal style="--i:1">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z"/></svg></span>
+        <h4>따뜻한 진료</h4><p>겁먹은 아이도 편안하도록, 동물의 눈높이에서 부드럽게 진료합니다.</p>
+      </div>
+      <div class="val" data-reveal style="--i:2">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3" stroke-linecap="round"/></svg></span>
+        <h4>정확한 진단</h4><p>최신 검사 장비와 풍부한 경험으로 원인을 정확히 찾아냅니다.</p>
+      </div>
+      <div class="val" data-reveal style="--i:3">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26"><path d="M4 7h16M4 12h16M4 17h10" stroke-linecap="round"/></svg></span>
+        <h4>투명한 설명</h4><p>검사·치료·비용을 보호자가 이해할 때까지 충분히 설명합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="image-slot.js"></script>
+<script src="chrome.js"></script>
+<script src="theme.js"></script>
+<script src="site.js"></script>
+<script src="chatbot.js"></script>
+</body>
+</html>

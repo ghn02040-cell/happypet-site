@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진료 예약 · 행복펫 동물 메디컬센터</title>
+<script>try{var t=localStorage.getItem('happypet-theme');if(t)document.documentElement.setAttribute('data-theme',t);var m=localStorage.getItem('happypet-mode');if(m)document.documentElement.setAttribute('data-mode',m);}catch(e){}</script>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="themes.css">
+<meta name="description" content="전화 또는 온라인으로 우리 아이의 진료를 간편하게 예약하세요. 응급 상황은 24시간 대응합니다.">
+<meta property="og:site_name" content="행복펫 동물 메디컬센터">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://happypet.kr/예약.html">
+<meta property="og:title" content="진료 예약 · 행복펫 동물 메디컬센터">
+<meta property="og:description" content="온라인으로 간편하게 진료를 예약하세요. 응급 상황은 24시간 대응합니다.">
+<meta property="og:image" content="https://happypet.kr/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://happypet.kr/og-image.png">
+<style>
+.subhero { padding-top: clamp(130px,15vw,180px); padding-bottom: clamp(20px,3vw,40px); position: relative; overflow: hidden; }
+.subhero::before { content:""; position:absolute; inset:0; z-index:-1; background: radial-gradient(60% 60% at 90% 0%, var(--primary-tint), transparent 62%); }
+.subhero h1 { font-size: clamp(34px,6vw,72px); font-weight:800; letter-spacing:-.035em; line-height:1.02; margin-top:16px; }
+.subhero .display-en { font-family: var(--display); color:var(--primary); }
+.crumb { font: 600 13.5px/1 var(--latin); letter-spacing:.04em; color: var(--ink-faint); }
+.crumb a:hover { color: var(--primary); }
+
+.book-grid { display:grid; grid-template-columns: 1.4fr .85fr; gap:32px; align-items:start; }
+.form-card { background:var(--surface); border-radius:var(--radius-l); box-shadow:var(--shadow-m); padding:clamp(28px,4vw,48px); }
+.field { margin-bottom:26px; }
+.field > label { display:block; font-weight:700; font-size:15px; letter-spacing:-.01em; margin-bottom:12px; }
+.field > label .req { color:var(--accent); margin-left:3px; }
+.chips { display:flex; flex-wrap:wrap; gap:10px; }
+.chip { padding:11px 18px; border-radius:999px; background:var(--bg); box-shadow:inset 0 0 0 1.5px var(--line); font-weight:600; font-size:14.5px; color:var(--ink-soft); transition:all .2s; }
+.chip:hover { box-shadow:inset 0 0 0 1.5px var(--primary); color:var(--primary); }
+.chip.sel { background:var(--primary); color:#fff; box-shadow:none; }
+.input, .select, .textarea { width:100%; font-family:inherit; font-size:15.5px; color:var(--ink); background:var(--bg); border:none; box-shadow:inset 0 0 0 1.5px var(--line); border-radius:var(--radius-s); padding:14px 16px; transition:box-shadow .2s; }
+.input:focus, .select:focus, .textarea:focus { outline:none; box-shadow:inset 0 0 0 2px var(--primary); }
+.textarea { resize:vertical; min-height:96px; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.err { color:var(--accent-deep); font-size:13px; font-weight:600; margin-top:7px; display:none; }
+.field.invalid .err { display:block; }
+.field.invalid .input, .field.invalid .select { box-shadow:inset 0 0 0 2px var(--accent); }
+.submit-btn { width:100%; justify-content:center; font-size:17px; padding:17px; }
+
+.aside-card { background:var(--surface); border-radius:var(--radius-l); box-shadow:var(--shadow-s); padding:30px 28px; }
+.aside-card + .aside-card { margin-top:18px; }
+.aside-card h4 { font-size:13px; letter-spacing:.1em; text-transform:uppercase; font-family:var(--latin); color:var(--ink-faint); margin-bottom:16px; }
+.info-row { display:flex; gap:13px; align-items:flex-start; padding:11px 0; }
+.info-row + .info-row { border-top:1px solid var(--line); }
+.info-row .ic { width:38px; height:38px; border-radius:11px; background:var(--primary-tint); color:var(--primary); display:grid; place-items:center; flex:none; }
+.info-row b { display:block; font-size:15px; } .info-row small { color:var(--ink-faint); font-size:13px; }
+.note { background:var(--accent-soft); border-radius:var(--radius-m); padding:18px 20px; }
+.note b { color:var(--accent-deep); } .note p { font-size:14px; color:var(--ink-soft); margin-top:6px; }
+
+.success { display:none; text-align:center; padding:clamp(36px,5vw,60px); }
+.success.show { display:block; }
+.success .check { width:84px; height:84px; border-radius:50%; background:var(--primary); color:#fff; display:grid; place-items:center; margin:0 auto 24px; animation:pop .5s cubic-bezier(.2,.9,.3,1.4); }
+@keyframes pop { from{transform:scale(.4);opacity:0;} }
+.success h2 { font-size:30px; font-weight:800; letter-spacing:-.03em; }
+.success p { color:var(--ink-soft); margin-top:12px; }
+.summary { background:var(--bg); border-radius:var(--radius-m); padding:22px; text-align:left; margin:26px auto 0; max-width:380px; }
+.summary div { display:flex; justify-content:space-between; padding:8px 0; font-size:14.5px; }
+.summary div + div { border-top:1px solid var(--line); }
+.summary span:first-child { color:var(--ink-faint); }
+.summary span:last-child { font-weight:700; }
+@media (max-width:900px){ .book-grid{grid-template-columns:1fr;} }
+@media (max-width:480px){ .two{grid-template-columns:1fr;} }
+</style>
+</head>
+<body data-page="booking">
+
+<section class="subhero">
+  <div class="wrap">
+    <p class="crumb" data-reveal><a href="행복펫 동물 메디컬센터.html">홈</a> &nbsp;/&nbsp; 예약</p>
+    <span class="eyebrow" data-reveal style="--i:1; margin-top:18px;">RESERVATION</span>
+    <h1 data-reveal style="--i:2">우리 아이의 진료<br><span class="display-en">간편 예약</span></h1>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap book-grid">
+    <div class="form-card" data-reveal>
+      <form id="bookForm" novalidate>
+        <div class="field" data-field="pet">
+          <label>반려동물 종류<span class="req">*</span></label>
+          <div class="chips" id="petChips">
+            <button type="button" class="chip" data-val="강아지">🐶 강아지</button>
+            <button type="button" class="chip" data-val="고양이">🐱 고양이</button>
+            <button type="button" class="chip" data-val="햄스터">🐹 햄스터</button>
+            <button type="button" class="chip" data-val="토끼">🐰 토끼</button>
+            <button type="button" class="chip" data-val="기타">기타</button>
+          </div>
+          <div class="err">반려동물 종류를 선택해 주세요.</div>
+        </div>
+
+        <div class="field" data-field="service">
+          <label>진료 항목<span class="req">*</span></label>
+          <select class="select" id="service">
+            <option value="">선택해 주세요</option>
+            <option>일반 진료·상담</option>
+            <option>예방접종</option>
+            <option>건강검진</option>
+            <option>치과 (스케일링 등)</option>
+            <option>외과·수술 상담</option>
+            <option>특수동물 진료</option>
+          </select>
+          <div class="err">진료 항목을 선택해 주세요.</div>
+        </div>
+
+        <div class="two">
+          <div class="field" data-field="name">
+            <label>보호자 성함<span class="req">*</span></label>
+            <input class="input" id="name" type="text" placeholder="홍길동">
+            <div class="err">성함을 입력해 주세요.</div>
+          </div>
+          <div class="field" data-field="phone">
+            <label>연락처<span class="req">*</span></label>
+            <input class="input" id="phone" type="tel" placeholder="010-0000-0000" inputmode="numeric">
+            <div class="err">올바른 연락처를 입력해 주세요.</div>
+          </div>
+        </div>
+
+        <div class="two">
+          <div class="field" data-field="date">
+            <label>희망 날짜<span class="req">*</span></label>
+            <input class="input" id="date" type="date">
+            <div class="err">날짜를 선택해 주세요.</div>
+          </div>
+          <div class="field" data-field="time">
+            <label>희망 시간<span class="req">*</span></label>
+            <div class="chips" id="timeChips">
+              <button type="button" class="chip" data-val="오전 10:00">10:00</button>
+              <button type="button" class="chip" data-val="오전 11:30">11:30</button>
+              <button type="button" class="chip" data-val="오후 2:00">14:00</button>
+              <button type="button" class="chip" data-val="오후 4:00">16:00</button>
+              <button type="button" class="chip" data-val="오후 6:00">18:00</button>
+            </div>
+            <div class="err">시간을 선택해 주세요.</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>요청사항 <span style="color:var(--ink-faint);font-weight:500;">(선택)</span></label>
+          <textarea class="textarea" id="memo" placeholder="증상이나 궁금한 점을 자유롭게 적어주세요."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn--primary submit-btn">예약 신청하기
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </form>
+
+      <div class="success" id="success">
+        <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M5 13l4 4L19 7"/></svg></div>
+        <h2>예약 신청이 완료되었어요!</h2>
+        <p>담당자가 확인 후 입력하신 연락처로<br>예약 확정 안내를 드릴 예정입니다.</p>
+        <div class="summary" id="summary"></div>
+        <button class="btn btn--ghost" style="margin-top:24px" onclick="location.reload()">새 예약하기</button>
+      </div>
+    </div>
+
+    <aside data-reveal style="--i:1">
+      <div class="aside-card">
+        <h4>진료 시간</h4>
+        <div class="info-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/></svg></span><div><b>평일 09:00 – 21:00</b><small>주말·공휴일 10:00 – 18:00</small></div></div>
+        <div class="info-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 21s-7-5.7-7-11a7 7 0 0114 0c0 5.3-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><b>서울 강남구 행복로 24</b><small>행복역 3번 출구 도보 3분</small></div></div>
+        <div class="info-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 6l8 6 8-6M4 6v12h16V6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><b>02-1234-5678</b><small>care@happypet.kr</small></div></div>
+      </div>
+      <div class="aside-card">
+        <div class="note">
+          <b>⚡ 응급 상황이신가요?</b>
+          <p>야간·공휴일 응급 진료는 예약 없이 <b>02-1234-5678</b>로 바로 전화 주세요. 24시간 의료진이 대기합니다.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<script src="image-slot.js"></script>
+<script src="chrome.js"></script>
+<script src="theme.js"></script>
+<script src="site.js"></script>
+<script src="chatbot.js"></script>
+<script>
+(function(){
+  var pet='', time='';
+  function chipGroup(id, cb){
+    document.getElementById(id).addEventListener('click', function(e){
+      var c=e.target.closest('.chip'); if(!c) return;
+      this.querySelectorAll('.chip').forEach(function(x){x.classList.remove('sel');});
+      c.classList.add('sel'); cb(c.dataset.val);
+      c.closest('.field').classList.remove('invalid');
+    });
+  }
+  chipGroup('petChips', function(v){pet=v;});
+  chipGroup('timeChips', function(v){time=v;});
+
+  // sensible default date = tomorrow
+  var d=new Date(); d.setDate(d.getDate()+1);
+  document.getElementById('date').value=d.toISOString().slice(0,10);
+  document.getElementById('date').min=new Date().toISOString().slice(0,10);
+
+  ['name','phone','service','date'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', function(){ this.closest('.field').classList.remove('invalid'); });
+  });
+
+  document.getElementById('bookForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var ok=true;
+    function bad(sel){ document.querySelector('[data-field="'+sel+'"]').classList.add('invalid'); ok=false; }
+    if(!pet) bad('pet');
+    var service=document.getElementById('service').value; if(!service) bad('service');
+    var name=document.getElementById('name').value.trim(); if(!name) bad('name');
+    var phone=document.getElementById('phone').value.replace(/[^0-9]/g,''); if(phone.length<9) bad('phone');
+    var date=document.getElementById('date').value; if(!date) bad('date');
+    if(!time) bad('time');
+    if(!ok){ return; }
+
+    document.getElementById('summary').innerHTML =
+      '<div><span>반려동물</span><span>'+pet+'</span></div>'+
+      '<div><span>진료 항목</span><span>'+service+'</span></div>'+
+      '<div><span>보호자</span><span>'+name+'</span></div>'+
+      '<div><span>일시</span><span>'+date+' '+time+'</span></div>';
+    document.getElementById('bookForm').style.display='none';
+    document.getElementById('success').classList.add('show');
+  });
+})();
+</script>
+</body>
+</html>

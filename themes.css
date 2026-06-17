@@ -1,0 +1,82 @@
+/* =========================================================
+   행복펫 — Color Palettes (2-color pairs)
+   Applied via [data-theme="..."] on <html>. Default (펫그린)
+   lives in styles.css :root, repeated here for completeness.
+   ========================================================= */
+
+/* 세이지 — 파스텔 세이지그린 + 코랄피치 (기본) */
+:root,
+html[data-theme="green"] {
+  --primary: #3C9079; --primary-deep: #2C6F5D; --primary-bright: #57B49B;
+  --primary-tint: #E5F2ED; --primary-tint-2: #CFEADF;
+  --accent: #F2876B; --accent-deep: #DA6A4D; --accent-soft: #FCE6DD;
+  --amber: #F2C46B; --amber-soft: #FBF0D8;
+}
+
+/* 피치 — 파스텔 테라코타 + 민트틸 */
+html[data-theme="sunset"] {
+  --primary: #CE7551; --primary-deep: #AC5C3C; --primary-bright: #E0926F;
+  --primary-tint: #FAE9E0; --primary-tint-2: #F4D6C8;
+  --accent: #3FA08D; --accent-deep: #2F8073; --accent-soft: #DBF0EB;
+  --amber: #F2C46B; --amber-soft: #FBF0D8;
+}
+
+/* 스카이 — 파스텔 더스티블루 + 블러시핑크 */
+html[data-theme="ocean"] {
+  --primary: #4E81C6; --primary-deep: #3A63A0; --primary-bright: #76A3E0;
+  --primary-tint: #E7EEFA; --primary-tint-2: #D4E2F6;
+  --accent: #EC8AA6; --accent-deep: #D46A89; --accent-soft: #FBE2EA;
+  --amber: #F2C46B; --amber-soft: #FBF0D8;
+}
+
+/* 라일락 — 연한 파스텔 라벤더 + 로즈 */
+html[data-theme="lavender"] {
+  --primary: #9B86D6; --primary-deep: #7E68C0; --primary-bright: #B4A2E4;
+  --primary-tint: #F0EBFB; --primary-tint-2: #E2D9F6;
+  --accent: #EE9BB9; --accent-deep: #D4789A; --accent-soft: #FBE7EF;
+  --amber: #F2C46B; --amber-soft: #FBF0D8;
+}
+
+/* 민트 — 파스텔 아쿠아민트 + 애프리콧 */
+html[data-theme="mango"] {
+  --primary: #3AA199; --primary-deep: #2A7E78; --primary-bright: #5DBDB5;
+  --primary-tint: #E2F4F1; --primary-tint-2: #CBEBE6;
+  --accent: #F0A05D; --accent-deep: #D6823E; --accent-soft: #FCEAD7;
+  --amber: #F2C46B; --amber-soft: #FBF0D8;
+}
+
+/* 로즈 — 연한 파스텔 핑크 + 코랄 */
+html[data-theme="cherry"] {
+  --primary: #DB81A8; --primary-deep: #C0648C; --primary-bright: #E89EBD;
+  --primary-tint: #FBE7F1; --primary-tint-2: #F6D5E4;
+  --accent: #F0997D; --accent-deep: #D6785C; --accent-soft: #FCE7DF;
+  --amber: #F2C46B; --amber-soft: #FBF0D8;
+}
+
+/* =========================================================
+   DARK MODE — flips neutrals; palette hues stay, tints become
+   translucent versions of the active theme's primary/accent.
+   Placed after the palettes so it wins on equal specificity.
+   ========================================================= */
+html[data-mode="dark"] {
+  --bg: #131F1B; --paper: #172420; --surface: #1E2D27;
+  --ink: #EFF3F0; --ink-soft: #A8B7B0; --ink-faint: #76857D;
+  --line: rgba(255,255,255,.10); --line-strong: rgba(255,255,255,.18);
+  --header-bg: rgba(17,27,23,.82);
+  --ghost-bg: rgba(255,255,255,.06); --ghost-bg-hover: rgba(255,255,255,.13);
+  --primary-tint: color-mix(in srgb, var(--primary) 22%, transparent);
+  --primary-tint-2: color-mix(in srgb, var(--primary) 36%, transparent);
+  --accent-soft: color-mix(in srgb, var(--accent) 24%, transparent);
+  --amber-soft: color-mix(in srgb, var(--amber) 24%, transparent);
+}
+html[data-mode="dark"] body {
+  background:
+    radial-gradient(70% 55% at 88% 6%, color-mix(in srgb, var(--amber) 14%, transparent), transparent 60%),
+    var(--bg);
+}
+
+/* smooth swap */
+body, .btn, .svc, .post, .float-card, .cta-card, .kw-band,
+.site-header, .nav a, .pill, image-slot {
+  transition: background-color .45s ease, color .45s ease, box-shadow .45s ease;
+}
