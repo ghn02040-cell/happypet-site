@@ -54,8 +54,8 @@
   var CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   var RESET = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 4v4h4"/></svg>';
 
-  var CHARACTER_IMG = '<img src="업로드/chatbot-character.jpg" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-  var CHARACTER_SMALL = '<img src="업로드/chatbot-character.jpg" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:9px;">';
+  var CHARACTER_IMG = '<img src="chatbot-character.jpg" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  var CHARACTER_SMALL = '<img src="chatbot-character.jpg" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:9px;">';
 
   var css = `
   #hpc-root{ position:fixed; z-index:2147483000; right:max(20px, env(safe-area-inset-right)); bottom:max(20px, env(safe-area-inset-bottom)); font-family:var(--sans, system-ui, sans-serif); }
@@ -186,7 +186,7 @@
     '</div>' +
     '<button id="hpc-launch" aria-label="상담봇 열기">' +
       '<span class="ring"></span>' +
-      '<img class="char-img" src="업로드/chatbot-character.jpg" alt="상담봇">' +
+      '<img class="char-img" src="chatbot-character.jpg" alt="상담봇">' +
       '<span class="ic-close">' + CLOSE + '</span>' +
     '</button>';
   document.body.appendChild(root);
@@ -212,7 +212,7 @@
     var wrap = document.createElement('div');
     wrap.className = 'hpc-msg ' + (role === 'user' ? 'me' : 'bot');
     var inner = '';
-    if (role !== 'user') inner += '<span class="ava"><img src="업로드/chatbot-character.jpg" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:9px;"></span>';
+    if (role !== 'user') inner += '<span class="ava"><img src="chatbot-character.jpg" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:9px;"></span>';
     inner += '<div class="bub"></div>';
     wrap.innerHTML = inner;
     wrap.querySelector('.bub').textContent = text;
@@ -243,7 +243,7 @@
     var wrap = document.createElement('div');
     wrap.className = 'hpc-msg bot';
     wrap.id = 'hpc-typing-row';
-    wrap.innerHTML = '<span class="ava"><img src="업로드/chatbot-character.jpg" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:9px;"></span><div class="bub" style="padding:0"><div class="hpc-typing"><i></i><i></i><i></i></div></div>';
+    wrap.innerHTML = '<span class="ava"><img src="chatbot-character.jpg" alt="상담봇" style="width:100%;height:100%;object-fit:cover;border-radius:9px;"></span><div class="bub" style="padding:0"><div class="hpc-typing"><i></i><i></i><i></i></div></div>';
     bodyEl.appendChild(wrap);
     scrollDown();
     return wrap;
